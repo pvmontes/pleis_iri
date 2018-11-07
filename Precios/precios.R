@@ -6,6 +6,8 @@ setwd("C:/Users/maria.purificacion/Documents/Precios")
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(tidyverse)
+
 
 datos_original <- read_excel("listado_precios_1_3_extendido.xlsx")
 
@@ -14,9 +16,12 @@ datos <- datos_original
 
 #We convert in character the number to manipulating.
 datos$precio_servicio <- as.character(datos$precio_servicio_original)
-#We remove the comma if they have it:
-datos$precio_servicio <- gsub("[.]","", datos$precio_servicio)
+#We remove the comma or point if they have it, (Excel changes the symbol):
+datos$precio_servicio <- gsub("[,]","", datos$precio_servicio)
 
+#We convert in numeric the field "precio_articulos", (first we replace comma by point like decimal separator).
+datos$precio_articulos <- gsub(",", ".", datos$precio_articulos)
+datos$precio_articulos <- as.numeric(datos$precio_articulos)
 
 
 #A) Integer part of prices articles is 0.
@@ -113,8 +118,15 @@ result$precio_servicio <- as.numeric(result$precio_servicio)
 
 merge(result, datos_original, by="id")
 
-#We remove the column "precio_servicio" modified.
-end_result <- result[,-c(4)]
+#We remove the column not necessary (price modified and others).
+end_result <- result[,-c(4,10)]
+
+View(end_result)
+
+write.csv(end_result, "results_07_11_1.csv")
+
+
+#Until here if we don't want plots or statistical calculus.
 
 
 
